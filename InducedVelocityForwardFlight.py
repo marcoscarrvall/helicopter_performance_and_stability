@@ -4,19 +4,14 @@ from scipy.optimize import fsolve
 
 from data import ApacheAH64
 
-# ==========================================
-# 1. HELICOPTER PARAMETERS (EXTRACTED)
-# ==========================================
-# Extracting data directly from the imported class
 W = ApacheAH64.helicopter["W"]
 R = ApacheAH64.main_rotor["R"]
 rho = ApacheAH64.flight_condition["rho"]
 V_cruise = ApacheAH64.specs["v_cruise"]
 
-# Handle the 'None' value for flat plate area gracefully
 f = ApacheAH64.helicopter["flat_plate_area"]
 if f is None:
-    f = 1.7  # Fallback equivalent flat plate area in m^2
+    f = 1.7  
 
 
 V_max = max(V_cruise * 1.2, 90.0) 
