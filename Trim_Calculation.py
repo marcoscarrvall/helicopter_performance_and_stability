@@ -11,11 +11,7 @@ def calculate_trim_lecture_method():
     W = ApacheAH64.helicopter["W"]
     R = ApacheAH64.main_rotor["R"]
     rho = ApacheAH64.flight_condition["rho"]
-
-    f_area = ApacheAH64.helicopter["flat_plate_area"]
-    if f_area is None:
-        f_area = 1.7  
-
+    f_area = ApacheAH64.helicopter["flat_plate_area"] 
     Omega = ApacheAH64.main_rotor["omega"]         # Rotor speed (rad/s)
     Nb = ApacheAH64.main_rotor["N_blades"]                # Number of blades
     c = ApacheAH64.main_rotor["c"]               # Blade chord (m)

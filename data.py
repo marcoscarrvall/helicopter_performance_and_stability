@@ -34,7 +34,7 @@ class ApacheAH64:
         "I_yy": None,                # [kg*m^2] Moment of inertia in y-axis
         "cg_to_hub_z": None,         # [m] Vertical distance from rotor hub center to CG
         "fuselage_cd": None,         # [-] Fuselage drag coefficient
-        "flat_plate_area": None,     # [m^2] Equivalent flat plate area
+        "flat_plate_area": 1.6,     # [m^2] Equivalent flat plate area
         "has_wings": True,           # [bool] Presence of wings (affects drag calculations)        
 
         "L_tot": 17.729,              # [m] Total length (58 ft 2 in) [1]
