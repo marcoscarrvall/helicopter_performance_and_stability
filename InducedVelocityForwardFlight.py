@@ -81,4 +81,6 @@ plt.xlim(0, V_max)
 plt.ylim(0, vih * 1.2)
 plt.tight_layout()
 
+
+
 plt.show()
