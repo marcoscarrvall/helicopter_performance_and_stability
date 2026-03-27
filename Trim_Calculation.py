@@ -19,7 +19,7 @@ def calculate_trim_lecture_method():
     Omega = ApacheAH64.main_rotor["omega"]         # Rotor speed (rad/s)
     Nb = ApacheAH64.main_rotor["N_blades"]                # Number of blades
     c = ApacheAH64.main_rotor["c"]               # Blade chord (m)
-    cla = 5.7              # Lift curve slope (1/rad)
+    cla = 2 * np.pi              # Lift curve slope (1/rad)
     
     # Derived parameters
     V_tip = Omega * R               # Tip speed (m/s)
