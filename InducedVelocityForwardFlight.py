@@ -8,12 +8,9 @@ W = ApacheAH64.helicopter["W"]
 R = ApacheAH64.main_rotor["R"]
 rho = ApacheAH64.flight_condition["rho"]
 V_cruise = ApacheAH64.specs["v_cruise"]
-
 f = ApacheAH64.helicopter["flat_plate_area"]
 if f is None:
     f = 1.7  
-
-
 V_max = max(V_cruise * 1.2, 90.0) 
 
 # ==========================================
