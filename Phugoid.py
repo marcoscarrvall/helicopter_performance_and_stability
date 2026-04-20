@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import fsolve
+from scipy.integrate import odeint
 
 from data import ApacheAH64
 
@@ -43,7 +44,7 @@ def calculate_hover_phugoid_lecture_method():
     Mu = (m * g * h / Iy) * A1_du
     
     Mq = (m * g * h / Iy) * A2_dq
-    print(f"Derivatives: Xu={Xu:.4f}, Mu={Mu:.4f}, Mq={Mq:.4f}")
+    print(f"Derivatives: Xu={Xu:.4f}, Mu={Mu:.4f}, Mq={Mq:.4f}\n")
     
     # ** SLIDE 13 APPROXIMATION: Neglect Xq **
     Xq = 0.0 
@@ -62,7 +63,6 @@ def calculate_hover_phugoid_lecture_method():
     
     print("=== ALL SYSTEM EIGENVALUES ===")
     for i, eig in enumerate(eigenvalues):
-        # Formatting to print real and imaginary parts clearly
         print(f"Eigenvalue {i+1}: {np.real(eig):.4f} {'+' if np.imag(eig) >= 0 else '-'} {np.abs(np.imag(eig)):.4f}j")
     print("==============================\n")
     
@@ -88,36 +88,75 @@ def calculate_hover_phugoid_lecture_method():
     # 5. VISUALIZATION (POLE MAP)
     # ==========================================
     plt.figure(figsize=(8, 6))
-    
-    # Plot the eigenvalues
     real_parts = np.real(eigenvalues)
     imag_parts = np.imag(eigenvalues)
     
     # Calculate plot limits based on the furthest eigenvalue
     limit = max(np.max(np.abs(real_parts)), np.max(np.abs(imag_parts))) * 1.5
     
-    # Set the limits of the axes FIRST
     plt.xlim(-limit, limit)
     plt.ylim(-limit, limit)
-    
-    # Use the 'limit' variable to extend the shading all the way to the edges
     plt.axvspan(0, limit, color='red', alpha=0.1, label='Unstable Region (RHP)')
     plt.axvspan(-limit, 0, color='green', alpha=0.1, label='Stable Region (LHP)')
-    
-    # Use 'x' markers for poles
     plt.scatter(real_parts, imag_parts, color='red', marker='x', s=100, linewidths=2, label='System Eigenvalues (Poles)')
-    
-    # Add crosshairs for the origin to divide stable (left) and unstable (right) planes
     plt.axhline(0, color='black', linewidth=1.5)
     plt.axvline(0, color='black', linewidth=1.5)
-    
     plt.title('Hover Phugoid Eigenvalue Plot (Pole Map)', fontsize=14)
     plt.xlabel('Real Part [1/s] (Growth/Decay Rate)', fontsize=12)
     plt.ylabel('Imaginary Part [rad/s] (Oscillation Frequency)', fontsize=12)
     plt.grid(True, linestyle='--', alpha=0.7)
     plt.legend(loc='best')
-    
     plt.tight_layout()
+    plt.show()
+
+    # ==========================================
+    # 6. TIME HISTORY SIMULATION (SUPERIMPOSED)
+    # ==========================================
+    # Define the system of differential equations: dx/dt = A * x
+    def phugoid_system(x, t):
+        return A_matrix.dot(x)
+    
+    # Initial conditions: [u = 0.1 m/s, q = 0.0 rad/s, theta_f = 0.0 rad]
+    x0 = [0.1, 0.0, 0.0]
+    
+    # Time vector (Simulate for 60 seconds)
+    t = np.linspace(0, 60, 1000)
+    
+    # Integrate the system
+    response = odeint(phugoid_system, x0, t)
+    
+    # Extract states
+    u_resp = response[:, 0]
+    q_resp = np.degrees(response[:, 1])       # Convert to deg/s
+    theta_resp = np.degrees(response[:, 2])   # Convert to deg
+    
+    # Plotting the Superimposed Time History
+    fig, ax1 = plt.subplots(figsize=(10, 6))
+
+    # Primary Y-Axis (Left side for Velocity)
+    color1 = 'blue'
+    ax1.set_xlabel('Time (seconds)', fontsize=12)
+    ax1.set_ylabel('Velocity $u$ (m/s)', color=color1, fontsize=12)
+    line1 = ax1.plot(t, u_resp, color=color1, linewidth=2, label='Velocity ($u$)')
+    ax1.tick_params(axis='y', labelcolor=color1)
+    ax1.grid(True, linestyle=':', alpha=0.7)
+
+    # Secondary Y-Axis (Right side for Angles)
+    ax2 = ax1.twinx()  
+    color2 = 'red'
+    color3 = 'green'
+    ax2.set_ylabel(r'Angles: Pitch $\theta_f$ (deg) & Rate $q$ (deg/s)', color='black', fontsize=12)  
+    line2 = ax2.plot(t, q_resp, color=color2, linewidth=2, linestyle='--', label='Pitch Rate ($q$)')
+    line3 = ax2.plot(t, theta_resp, color=color3, linewidth=2, label=r'Pitch Attitude ($\theta_f$)')
+    ax2.tick_params(axis='y', labelcolor='black')
+
+    # Combine legends from both axes into one box
+    lines = line1 + line2 + line3
+    labels = [l.get_label() for l in lines]
+    ax1.legend(lines, labels, loc='upper left', fontsize=12)
+
+    plt.title('Superimposed Hover Phugoid Response to 0.1 m/s Gust', fontsize=14)
+    fig.tight_layout() 
     plt.show()
 
 if __name__ == "__main__":
