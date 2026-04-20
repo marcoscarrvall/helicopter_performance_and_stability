@@ -32,7 +32,7 @@ class ApacheAH64:
         "W": 78537.8,                # [N] Total helicopter weight at MTOW (mass_mtow * 9.81)
         
         "I_yy": 69087.10,                # [kg*m^2] Moment of inertia in y-axis
-        "cg_to_hub_z": None,         # [m] Vertical distance from rotor hub center to CG
+        "cg_to_hub_z": 1.6,         # [m] Vertical distance from rotor hub center to CG
         "fuselage_cd": None,         # [-] Fuselage drag coefficient
         "flat_plate_area": 1.5,     # [m^2] Equivalent flat plate area
         "has_wings": True,           # [bool] Presence of wings (affects drag calculations)        
