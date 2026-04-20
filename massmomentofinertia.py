@@ -15,19 +15,19 @@ MASS_MR = 745.0    # Main Rotor
 # ---------------------------------------------------------
 
 # Main Fuselage (Modeled as Solid Ellipsoid)
-L_mf = 7  # Total Length
-H_mf = 2.6   # Total Height
+L_mf = 7.5  # Total Length
+H_mf = 2.4   # Total Height
 
 # Convert total dimensions to semi-axes (a and c) for the formula
 a_mf = L_mf / 2.0
 c_mf = H_mf / 2.0
 
 # Lower Tail (Modeled as Horizontal Solid Cylinder)
-L_lt = 5.1   # Length 
-r_lt = 0.55   # Radius (Placeholder - replace with actual radius)
+L_lt = 5   # Length 
+r_lt = 0.5   # Radius (Placeholder - replace with actual radius)
 
 # Vertical Tail (Modeled as Vertical Solid Cylinder)
-L_vt = 2.6   # Length/Height 
+L_vt = 2.1   # Length/Height 
 r_vt = 0.5   # Radius (Placeholder - replace with actual radius)
 
 # Main Rotor (Modeled as Solid Disk)
