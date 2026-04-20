@@ -17,9 +17,9 @@ def calculate_trim_lecture_method():
         f_area = 1.7  
 
     Omega = ApacheAH64.main_rotor["omega"]         # Rotor speed (rad/s)
-    Nb = ApacheAH64.main_rotor["N_blades"]                # Number of blades
-    c = ApacheAH64.main_rotor["c"]               # Blade chord (m)
-    cla = 2 * np.pi              # Lift curve slope (1/rad)
+    Nb = ApacheAH64.main_rotor["N_blades"]         # Number of blades
+    c = ApacheAH64.main_rotor["c"]                 # Blade chord (m)
+    cla = 2 * np.pi                                # Lift curve slope (1/rad)
     
     # Derived parameters
     V_tip = Omega * R               # Tip speed (m/s)
@@ -33,6 +33,7 @@ def calculate_trim_lecture_method():
     
     theta_0_list = []
     theta_c_list = []
+    theta_f_neg_list = [] # List to store negative fuselage pitch (-theta_f)
 
     # ==========================================
     # 3. TRIM CALCULATION LOOP (Lecture Method)
@@ -41,14 +42,18 @@ def calculate_trim_lecture_method():
         # Step 1: Fuselage Drag and Required Thrust (Page 5)
         D_fus = 0.5 * rho * V**2 * f_area
         T = np.sqrt(W**2 + D_fus**2)               # Eq. 5
-        alpha_d = np.arctan(D_fus / W)             # Page 3: alpha_d = arctan(D/W)
+        
+        # Calculate actual fuselage pitch (theta_f) using the exact formula
+        theta_f = np.arctan(-D_fus / W)
+        
+        # The drag angle (alpha_d) is the negative of the fuselage pitch
+        alpha_d = -theta_f
         
         # Non-dimensional parameters
         C_T = T / (rho * A * V_tip**2)
         mu = V / V_tip
         
         # Step 2: Solve for Induced Velocity (lambda_i) (Page 7, Eq. 10)
-        # We know alpha_c - a1 = alpha_d. So lambda_i can be solved independently!
         lambda_i = np.sqrt(C_T / 2.0) # Initial guess (hover inflow)
         
         for _ in range(500):
@@ -64,14 +69,11 @@ def calculate_trim_lecture_method():
             lambda_i = 0.5 * lambda_i_new + 0.5 * lambda_i # Relaxation
             
         # Step 3: Solve for Collective (theta_0) and Cyclic (theta_c) (Pages 8-9)
-        # Substituting lambda_c = mu * alpha_d + mu * theta_c into Eq. 11 and Eq. 13
-        # Rearranging gives a 2x2 linear system: A * x = B
-        
         # Matrix A terms
         A11 = (2.0 / 3.0) * (1.0 + 1.5 * mu**2)
         A12 = -mu
         A21 = -(8.0 / 3.0) * mu
-        A22 = 1.0 + 1.5 * mu**2  # Derived from (1 - 0.5*mu^2) + 2*mu^2
+        A22 = 1.0 + 1.5 * mu**2  
         
         # Vector B terms
         B1 = (4.0 * C_T) / (cla * sigma) + lambda_i + mu * alpha_d
@@ -89,9 +91,10 @@ def calculate_trim_lecture_method():
             print(f"Failed to solve at V={V}")
             theta_0, theta_c = 0, 0
             
-        # Store results in degrees
+        # Store results in degrees. We plot -theta_f to keep the curve positive!
         theta_0_list.append(np.degrees(theta_0))
         theta_c_list.append(np.degrees(theta_c))
+        theta_f_neg_list.append(np.degrees(-theta_f)) 
 
     # ==========================================
     # 4. PLOTTING THE RESULTS
@@ -100,10 +103,11 @@ def calculate_trim_lecture_method():
     
     plt.plot(V_array, theta_0_list, label=r'Collective Pitch ($\theta_0$)', color='blue', linewidth=2)
     plt.plot(V_array, theta_c_list, label=r'Longitudinal Cyclic ($\theta_c$)', color='green', linewidth=2)
+    plt.plot(V_array, theta_f_neg_list, label=r'Nose-Down Pitch ($-\theta_f$)', color='red', linestyle='--', linewidth=2)
     
-    plt.title('Helicopter Pilot Controls vs. Forward Velocity', fontsize=14)
+    plt.title('Helicopter Pilot Controls & Pitch vs. Forward Velocity', fontsize=14)
     plt.xlabel('Forward Velocity V (m/s)', fontsize=12)
-    plt.ylabel('Pitch Angle (Degrees)', fontsize=12)
+    plt.ylabel('Angle (Degrees)', fontsize=12)
     plt.grid(True, linestyle=':', alpha=0.7)
     plt.legend(fontsize=12)
     

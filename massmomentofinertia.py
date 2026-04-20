@@ -15,8 +15,9 @@ MASS_MR = 745.0    # Main Rotor
 # ---------------------------------------------------------
 
 # Main Fuselage (Modeled as Solid Ellipsoid)
-L_mf = 9.9  # Total Length
+L_mf = 7  # Total Length
 H_mf = 2.6   # Total Height
+
 # Convert total dimensions to semi-axes (a and c) for the formula
 a_mf = L_mf / 2.0
 c_mf = H_mf / 2.0
@@ -36,7 +37,7 @@ r_mr = 7.315   # Radius of the rotor disk (Placeholder)
 # PARAMETERS: Distances from Component Centroid to CG [meters]
 # ---------------------------------------------------------
 d_mf_x = -0.25
-d_mf_z = -0.4 
+d_mf_z = -0.4
 
 d_lt_x = 6.8
 d_lt_z = 1.2
