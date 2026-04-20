@@ -16,7 +16,7 @@ def calculate_hover_phugoid_lecture_method():
     rho = ApacheAH64.flight_condition["rho"]            # Air density (kg/m^3)
     cla = 2 * np.pi      # Lift curve slope (1/rad)
     
-    Iy = 50000.0           # Pitch moment of inertia (kg*m^2)
+    Iy = ApacheAH64.helicopter["I_yy"]          # Pitch moment of inertia (kg*m^2)
     h = 1.75               # Mast height above CG (m)
     Ib = ApacheAH64.main_rotor["blade_I"]             # Single blade flapping inertia (kg*m^2)
     theta_0 = np.radians(11.5) # Hover collective pitch (rad)
