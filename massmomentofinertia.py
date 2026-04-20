@@ -4,6 +4,9 @@
 # ---------------------------------------------------------
 
 # CONSTANTS: Masses [kg] (From table)
+import re
+import os
+
 MASS_MF = 6751.0   # Main Fuselage
 MASS_LT = 211.68   # Lower Tail
 MASS_VT = 296.44   # Vertical Tail
@@ -98,3 +101,31 @@ print(f"{'Main Rotor:':<18} | {I_bar_mr:>12,.1f} kg*m^2 | {I_yy_mr:>14,.1f} kg*m
 print("-" * 65)
 print(f"SYSTEM TOTAL I_yy: {I_yy_total:,.2f} kg*m^2")
 print("-" * 65)
+
+print("\nAttempting to update data.py...")
+data_file_path = "data.py"
+
+if os.path.exists(data_file_path):
+    # Read the current contents of data.py
+    with open(data_file_path, "r", encoding="utf-8") as file:
+        content = file.read()
+    
+    # Regex pattern to find "I_yy": <anything>, and capture the surrounding syntax
+    # It looks for "I_yy": followed by any spacing, then anything that isn't a comma, then a comma
+    pattern = r'("I_yy"\s*:\s*)[^,]+(,)'
+    
+    # Replacement string: Keeps the first group ("I_yy": ), inserts the rounded total, keeps the second group (,)
+    replacement = rf'\g<1>{I_yy_total:.2f}\g<2>'
+    
+    # Perform the substitution
+    new_content, count = re.subn(pattern, replacement, content)
+    
+    if count > 0:
+        # Write the updated content back to the file
+        with open(data_file_path, "w", encoding="utf-8") as file:
+            file.write(new_content)
+        print(f"✅ Successfully updated 'I_yy' in {data_file_path} to {I_yy_total:.2f}!")
+    else:
+        print("⚠️ Warning: Could not find the 'I_yy' key in data.py to update. Check the formatting.")
+else:
+    print(f"❌ Error: {data_file_path} not found in the current directory.")
