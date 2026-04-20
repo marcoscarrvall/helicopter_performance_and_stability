@@ -12,51 +12,55 @@ MASS_MR = 745.0    # Main Rotor
 # ---------------------------------------------------------
 # PARAMETERS: Dimensions [meters]
 # TO BE CORRECTED: Replace with actual component dimensions
-# L = Length (along x-axis), H = Height (along z-axis)
 # ---------------------------------------------------------
 
-# Main Fuselage (Modeled as Ellipsoid)
-L_mf = 14.0  
-H_mf = 3.5   
+# Main Fuselage (Modeled as Solid Ellipsoid)
+L_mf = 9.9  # Total Length
+H_mf = 2.6   # Total Height
+# Convert total dimensions to semi-axes (a and c) for the formula
+a_mf = L_mf / 2.0
+c_mf = H_mf / 2.0
 
-# Lower Tail (Modeled as Rectangular Prism)
-L_lt = 6.0   
-H_lt = 1.0   
+# Lower Tail (Modeled as Horizontal Solid Cylinder)
+L_lt = 5.1   # Length 
+r_lt = 0.55   # Radius (Placeholder - replace with actual radius)
 
-# Vertical Tail (Modeled as Rectangular Prism)
-L_vt = 1.5   
-H_vt = 3.0   
+# Vertical Tail (Modeled as Vertical Solid Cylinder)
+L_vt = 2.6   # Length/Height 
+r_vt = 0.5   # Radius (Placeholder - replace with actual radius)
 
-# Main Rotor (Modeled as Rectangular Prism per instructions)
-L_mr = 2.0   
-H_mr = 0.5   
+# Main Rotor (Modeled as Solid Disk)
+r_mr = 7.315   # Radius of the rotor disk (Placeholder)
 
 # ---------------------------------------------------------
 # PARAMETERS: Distances from Component Centroid to CG [meters]
-# TO BE CORRECTED: Replace with actual moment arms
 # ---------------------------------------------------------
-d_mf_x = -1.2 
-d_mf_z = -0.6 
+d_mf_x = -0.25
+d_mf_z = -0.4 
 
-d_lt_x = 10.5 
-d_lt_z = 0.4  
+d_lt_x = 6.8
+d_lt_z = 1.2
 
-d_vt_x = 9.8  
-d_vt_z = 2.9  
+d_vt_x = 9
+d_vt_z = 0.4 
 
-d_mr_x = 0.5  
-d_mr_z = 3.2  
+d_mr_x = 0.25  
+d_mr_z = 1.6  
 
 # ---------------------------------------------------------
 # CALCULATION 1: Centroidal Moments of Inertia (I_bar_y)
 # ---------------------------------------------------------
-# Ellipsoid: (1/20) * m * (L^2 + H^2)
-I_bar_mf = (1/20) * MASS_MF * (L_mf**2 + H_mf**2)
+# Ellipsoid: (1/5) * m * (a^2 + c^2)
+I_bar_mf = (1/5) * MASS_MF * (a_mf**2 + c_mf**2)
 
-# Rectangular Prisms: (1/12) * m * (L^2 + H^2)
-I_bar_lt = (1/12) * MASS_LT * (L_lt**2 + H_lt**2)
-I_bar_vt = (1/12) * MASS_VT * (L_vt**2 + H_vt**2)
-I_bar_mr = (1/12) * MASS_MR * (L_mr**2 + H_mr**2)
+# Horizontal Cylinder: (1/12)*m*L^2 + (1/4)*m*r^2
+I_bar_lt = (1/12) * MASS_LT * (L_lt**2) + (1/4) * MASS_LT * (r_lt**2)
+
+# Vertical Cylinder: (1/12)*m*L^2 + (1/4)*m*r^2
+I_bar_vt = (1/12) * MASS_VT * (L_vt**2) + (1/4) * MASS_VT * (r_vt**2)
+
+# Solid Disk: (1/4)*m*r^2
+I_bar_mr = (1/4) * MASS_MR * (r_mr**2)
 
 # ---------------------------------------------------------
 # CALCULATION 2: Transfer Terms (m * d^2)
@@ -81,15 +85,15 @@ I_yy_total = I_yy_mf + I_yy_lt + I_yy_vt + I_yy_mr
 # ---------------------------------------------------------
 # OUTPUT
 # ---------------------------------------------------------
-print("-" * 55)
+print("-" * 65)
 print("Helicopter Mass Moment of Inertia Calculation (I_yy)")
-print("-" * 55)
-print(f"{'Component':<18} | {'I_bar (Centroidal)':<18} | {'Total I_yy (About CG)'}")
-print("-" * 55)
-print(f"{'Main Fuselage:':<18} | {I_bar_mf:>10,.1f} kg*m^2 | {I_yy_mf:>14,.1f} kg*m^2")
-print(f"{'Lower Tail:':<18} | {I_bar_lt:>10,.1f} kg*m^2 | {I_yy_lt:>14,.1f} kg*m^2")
-print(f"{'Vertical Tail:':<18} | {I_bar_vt:>10,.1f} kg*m^2 | {I_yy_vt:>14,.1f} kg*m^2")
-print(f"{'Main Rotor:':<18} | {I_bar_mr:>10,.1f} kg*m^2 | {I_yy_mr:>14,.1f} kg*m^2")
-print("-" * 55)
+print("-" * 65)
+print(f"{'Component':<18} | {'I_bar (Centroidal)':<20} | {'Total I_yy (About CG)'}")
+print("-" * 65)
+print(f"{'Main Fuselage:':<18} | {I_bar_mf:>12,.1f} kg*m^2 | {I_yy_mf:>14,.1f} kg*m^2")
+print(f"{'Lower Tail:':<18} | {I_bar_lt:>12,.1f} kg*m^2 | {I_yy_lt:>14,.1f} kg*m^2")
+print(f"{'Vertical Tail:':<18} | {I_bar_vt:>12,.1f} kg*m^2 | {I_yy_vt:>14,.1f} kg*m^2")
+print(f"{'Main Rotor:':<18} | {I_bar_mr:>12,.1f} kg*m^2 | {I_yy_mr:>14,.1f} kg*m^2")
+print("-" * 65)
 print(f"SYSTEM TOTAL I_yy: {I_yy_total:,.2f} kg*m^2")
-print("-" * 55)
+print("-" * 65)
