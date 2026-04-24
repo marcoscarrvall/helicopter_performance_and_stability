@@ -11,7 +11,7 @@ mass=2200;
 rho=1.225;
 vtip=200;
 diam=2*7.32;
-iy=10615;
+iy=24000;
 mast=1;
 omega=vtip/(diam/2);
 area=pi/4*diam^2;
@@ -39,7 +39,7 @@ z(1)=0;
 
 %INTEGRATION 
 aantal=800;
-teind=80;
+teind=120;
 stap=(teind-t0)/aantal;
 
 for i=1:aantal 
